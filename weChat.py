@@ -51,7 +51,9 @@ def all_test(**kwargs):
 def hello(**kwargs):
     logger.info(str(kwargs))
     #TODO: 改成异步5s内回复
-    msg.reply(content='success') # 5s 不回复，回回复公众号故障, 提前回复避免提示
+    msg.reply(
+        kwargs['sender'], sender=kwargs['receiver'], content='success'
+    ) # 5s 不回复 'success' or '' ，会回复公众号故障, 提前回复避免提示
     try:
         reply = get_reply(kwargs.get('content','你是谁'), logger)
         return dict(content=str(reply), type="text")
