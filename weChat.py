@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 from flask import Flask, jsonify, request, url_for
 from weixin import Weixin, WeixinError, WeixinMsg
 from logger import create_logger
+from chatGPT import get_reply
 
 
 logger = create_logger('./log', name='chatgpt')
@@ -48,7 +49,13 @@ def all_test(**kwargs):
 
 @msg.text()
 def hello(**kwargs):
-    return dict(content="hello too!", type="text")
+    logger.info(str(kwargs))
+    try:
+        reply = get_reply(kwargs.get('content','你是谁'), logger)
+        return dict(content=str(reply), type="text")
+    except Exception as e:
+        logger.error(str(e))
+        return dict(content="AI机器人正在紧急修复中，请过会儿再试", type="text")
 
 
 @msg.text("world")
