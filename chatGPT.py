@@ -11,11 +11,12 @@
 
 import os
 import openai
+import requests
 
-def get_reply(content, logger):
-    logger.info("get_reply : Start  ****************")
+def get_answer_from_openai(question, logger):
+    logger.info(" Start  ****************")
     openai.api_key = os.getenv("OPENAI_API_KEY")
-    logger.info("Send content >>>")
+    logger.info("Send question >>>")
     response = openai.ChatCompletion.create(
         model = "gpt-3.5-turbo",
         messages = [
@@ -23,11 +24,11 @@ def get_reply(content, logger):
             # {"role": "user", "content": "Who won the world series in 2020?"},
             # {"role": "assistant", "content": "The Los Angeles Dodgers won the World Series in 2020."},
             # {"role": "user", "content": "Where was it played?"},
-            {"role": "user", "content": content},
+            {"role": "user", "content": question},
         ]        
     )
-    logger.info("Get response from openai")
-    logger.info("get_reply : End  ****************")
+    logger.info("Get answer from openai")
+    logger.info(" End  ****************")
     """
     response format
             {
@@ -49,3 +50,32 @@ def get_reply(content, logger):
     """
     return response['choices'][0]['message']['content']
 
+def answer_to_wechat(answer, access_token, openid, logger):
+    """
+    客服发消息借口 url
+    openid
+    content
+    """
+    logger.info(" Start  ****************")
+    url = f"https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={access_token}"
+    data = {
+        "touser":openid,
+        "msgtype":"text",
+        "text":
+        {
+            "content":answer
+        }
+    }
+    requests.post(url, data=data)
+    logger.info(" End  ****************")
+    return 
+
+def openai_to_wechat(question, access_token, openid, logger):
+    """
+    
+    """
+    logger.info(" Start  ****************")
+    answer = get_answer_from_openai(question=question, logger=logger)
+    answer_to_wechat(answer=answer, access_token=access_token, openid=openai, logger=logger)
+    logger.info(" End  ****************")
+    return
