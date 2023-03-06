@@ -61,7 +61,7 @@ def hello(**kwargs):
     logger.info(str(kwargs))
     question = kwargs.get("content", "Who are you?")
     access_token = wx.mp.access_token
-    openid = kwargs['receiver']
+    openid = kwargs['sender']
     q.put((question,access_token, openid)) # question, access_token, openid
     return msg.reply(
         kwargs['sender'], sender=kwargs['receiver'], content=''

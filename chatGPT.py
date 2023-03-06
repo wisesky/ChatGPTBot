@@ -14,7 +14,6 @@ import openai
 import requests
 
 def get_answer_from_openai(question, logger):
-    logger.info(" Start  ****************")
     openai.api_key = os.getenv("OPENAI_API_KEY")
     logger.info("Send question >>>")
     response = openai.ChatCompletion.create(
@@ -27,8 +26,7 @@ def get_answer_from_openai(question, logger):
             {"role": "user", "content": question},
         ]        
     )
-    logger.info("Get answer from openai")
-    logger.info(" End  ****************")
+    logger.info(f"Get answer from openai : {response}")
     """
     response format
             {
@@ -56,7 +54,6 @@ def answer_to_wechat(answer, access_token, openid, logger):
     openid
     content
     """
-    logger.info(" Start  ****************")
     url = f"https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={access_token}"
     data = {
         "touser":openid,
@@ -67,7 +64,6 @@ def answer_to_wechat(answer, access_token, openid, logger):
         }
     }
     requests.post(url, data=data)
-    logger.info(" End  ****************")
     return 
 
 def openai_to_wechat(question, access_token, openid, logger):
@@ -76,6 +72,7 @@ def openai_to_wechat(question, access_token, openid, logger):
     """
     logger.info(" Start  ****************")
     answer = get_answer_from_openai(question=question, logger=logger)
+    logger.info(f"answer : {answer}")
     answer_to_wechat(answer=answer, access_token=access_token, openid=openai, logger=logger)
     logger.info(" End  ****************")
     return

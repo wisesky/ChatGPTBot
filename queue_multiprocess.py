@@ -25,4 +25,4 @@ def worker(name, queue, logger):
         question, access_token, openid =  queue.get()
         # Process task
         openai_to_wechat(question=question, access_token=access_token, openid=openid, logger=logger)
-        logger.info(f"Question{question} openid{openid} processed by {name}")
+        logger.info(f"Question {question} openid {openid} processed by {name}")
