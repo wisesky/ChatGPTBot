@@ -63,7 +63,7 @@ def answer_to_wechat(answer, access_token, openid, logger):
             "content":answer
         }
     }
-    requests.post(url, json=data)
+    requests.post(url, data=data)
     return 
 
 def openai_to_wechat(question, access_token, openid, logger):
