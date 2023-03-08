@@ -63,7 +63,7 @@ def hello(**kwargs):
     access_token = wx.mp.access_token
     openid = kwargs['sender']
     q.put((question,access_token, openid)) # question, access_token, openid
-    return dict(content='', type="text")
+    return dict(content='success', type="text")
     # 5s 不回复 'success' or '' ，会回复公众号故障, 提前回复避免提示
     # try:
     #     reply = get_reply(kwargs.get('content','你是谁'), logger)
