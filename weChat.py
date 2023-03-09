@@ -73,7 +73,7 @@ def msgHandler(wx: Weixin, queue:Queue):
         3> “字符串内容” ，如果只是单纯的字符串，那么就不会被包装成微信的xml格式，将直接回复字符串内容
 
     """
-    msg = wx
+    msg = wx.msg
     @msg.all
     def all_test(**kwargs):
         logger.info(kwargs)
