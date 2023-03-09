@@ -52,9 +52,9 @@ def __init__():
 
     app.add_url_rule("/", view_func=msg.view_func)
 
-    return app, msg, queue, logger
+    return app, wx, queue, logger
 
-def msgHandler(msg: WeixinMsg, queue:Queue):
+def msgHandler(wx: Weixin, queue:Queue):
     """
     微信公众平台被动回复用户消息接口
     回复处理Handler
@@ -73,6 +73,7 @@ def msgHandler(msg: WeixinMsg, queue:Queue):
         3> “字符串内容” ，如果只是单纯的字符串，那么就不会被包装成微信的xml格式，将直接回复字符串内容
 
     """
+    msg = wx
     @msg.all
     def all_test(**kwargs):
         logger.info(kwargs)
@@ -125,8 +126,8 @@ def msgHandler(msg: WeixinMsg, queue:Queue):
     return msg
 
 if __name__ == '__main__':
-    app, msg, queue,logger = __init__()
-    msg = msgHandler(msg, queue)
+    app, wx, queue,logger = __init__()
+    msg = msgHandler(wx, queue)
 
     consumer = Process(target=worker , args=("Work_1", queue, OPENAI_API_KEY, logger))
     consumer.daemon = True
