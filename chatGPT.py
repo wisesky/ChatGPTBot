@@ -13,9 +13,9 @@ import os
 import openai
 import requests
 
-def get_answer_from_openai(question, logger):
-    openai.api_key = os.getenv("OPENAI_API_KEY")
-    logger.info("Send question >>>")
+#TODO 如何保存上下文聊天
+def get_answer_from_openai(question, openai_api_key,logger):
+    openai.api_key = openai_api_key
     response = openai.ChatCompletion.create(
         model = "gpt-3.5-turbo",
         messages = [
@@ -26,7 +26,7 @@ def get_answer_from_openai(question, logger):
             {"role": "user", "content": question},
         ]        
     )
-    logger.info(f"Get answer from openai : {response}")
+    logger.info(f"Send Question : {question}  \n Get answer from openai : {response}")
     """
     response format
             {
@@ -46,13 +46,27 @@ def get_answer_from_openai(question, logger):
         ]
         }
     """
+    print()
     return response['choices'][0]['message']['content']
 
 def answer_to_wechat(answer, access_token, openid, logger):
     """
-    客服发消息借口 url
-    openid
-    content
+        假如服务器无法保证在五秒内处理并回复，必须做出下述回复，这样微信服务器才不会对此作任何处理，并且不会发起重试
+        （这种情况下，可以使用客服消息接口进行异步回复）
+    下面是异步回复的接口:
+    微信公众平台  
+        ->  客服接口 :  POST https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=ACCESS_TOKEN
+                -> 发消息
+            JSON 数据包
+        {
+        "touser":"OPENID",
+        "msgtype":"text",
+        "text":
+        {
+            "content":"Hello World"
+        }
+    }
+
     """
     url = f"https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={access_token}"
     data = {
@@ -63,16 +77,16 @@ def answer_to_wechat(answer, access_token, openid, logger):
             "content":answer
         }
     }
-    requests.post(url, data=data)
+    r = requests.post(url, data=data)
+    logger.info(f"send answer : {answer} \n Get response from wechat server  : {r.text}")
     return 
 
-def openai_to_wechat(question, access_token, openid, logger):
+def openai_to_wechat(question, access_token, openid, openai_api_key,logger):
     """
-    
+    一轮完整的问答请求
     """
-    logger.info(" Start  ****************")
-    answer = get_answer_from_openai(question=question, logger=logger)
-    logger.info(f"answer : {answer}")
+    answer = get_answer_from_openai(question=question, openai_api_key=openai_api_key, logger=logger)
     answer_to_wechat(answer=answer, access_token=access_token, openid=openai, logger=logger)
-    logger.info(" End  ****************")
+    # 保存聊天记录
+    print(f"User({openid} : {question} \n ChatBot : {answer} ", file=open(f"./log/{openid}.log", mode="at"))
     return
