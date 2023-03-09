@@ -88,5 +88,5 @@ def openai_to_wechat(question, access_token, openid, openai_api_key,logger):
     answer = get_answer_from_openai(question=question, openai_api_key=openai_api_key, logger=logger)
     answer_to_wechat(answer=answer, access_token=access_token, openid=openai, logger=logger)
     # 保存聊天记录
-    print(f"User({openid} : {question} \n ChatBot : {answer} ", file=open(f"./log/{openid}.log", mode="at"))
+    print(f"User({openid} : {question} \nChatBot : {answer} ", file=open(f"./log/{openid}.log", mode="at"))
     return
