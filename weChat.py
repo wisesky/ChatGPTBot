@@ -22,12 +22,13 @@ from queue_multiprocess import worker
 
 APP_IP = "127.0.0.1"
 APP_PORT = 9900
-# 公众号： 禽兽兄弟 相关开发info
-WEIXIN_APP_ID = "wx3a9d69fe1255c373"
-WEIXIN_APP_SECRET = "eaa2205021de096728fe01a44755b073"
+# 公众号： ChenHub 相关开发info
+WEIXIN_APP_ID = "wx34a7f35cb5424180"
+WEIXIN_APP_SECRET = os.getenv("WEIXIN_APP_SECRET")
 WEIXIN_TOKEN = "7c0cd95f55c61fe37e8ed9e27171c2ec"
+
 # openai api key
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "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")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 log_dir = Path("./log")
 quene_length = 1000

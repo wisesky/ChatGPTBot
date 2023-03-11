@@ -46,7 +46,6 @@ def get_answer_from_openai(question, openai_api_key,logger):
         ]
         }
     """
-    print()
     return response['choices'][0]['message']['content']
 
 def answer_to_wechat(answer, access_token, openid, logger):
