@@ -49,7 +49,19 @@ def get_answer_from_openai(question, openai_api_key,logger):
     """
     return response['choices'][0]['message']['content']
 
-def answer_to_wechat(answer:str, access_token, openid, logger):
+def process_answer_for_wechat(answer):
+    """
+    预处理answer， 返回列表形式的answer
+    """
+    # 去掉开头的回车符\n
+    post_answer = answer
+    while post_answer.startswith('\n') :
+        post_answer = post_answer[1: ]
+    # 切分符合微信字数要求的消息 : 600字
+    answers = [answer[pos:pos+600] for pos in range(0,len(answer), 600)]
+    return answers
+
+def reply_to_wechat(answer:str, access_token, openid, logger):
     """
         假如服务器无法保证在五秒内处理并回复，必须做出下述回复，这样微信服务器才不会对此作任何处理，并且不会发起重试
         （这种情况下，可以使用客服消息接口进行异步回复）
@@ -68,25 +80,42 @@ def answer_to_wechat(answer:str, access_token, openid, logger):
     }
 
     """
-    # 预处理answer ，去掉开头的回车符\n
-    post_answer = answer
-    while post_answer.startswith('\n') :
-        post_answer = post_answer[1: ]
     url = f"https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={access_token}"
     data = {
         "touser":openid,
         "msgtype":"text",
         "text":
         {
-            "content":post_answer
+            "content":answer
         }
     }
-    # 微信发送消息，客服消息接口，必须是json，不能是data
-    # 同时为了包装json内部的英文编码，需要用非ascii，用unicode编码
+    # 微信发送消息，客服消息接口，必须是json，
+    # 由于 requests 参数 data会根据数据类型判断选择是否用json发送，
+    # 然而 直接用json参数，会触发自动的dict->json格式转换,默认转换方式不支持中文，
+    # 所以包装json内部的非英文编码，需要用非ascii，用unicode编码， 同时用utf8编码
     json_data = json.dumps(data, ensure_ascii=False)
     r = requests.post(url, data=json_data.encode('utf8'))
-    logger.info(f"send answer : {answer} \n Get response from wechat server  : {r.text}")
+    try:
+        r_json = r.json()
+        if r_json['errcode'] == 0 and r_json['errmsg'] is 'ok':
+            # {"errcode":0,"errmsg":"ok"}
+            logger.info(f"Answer Send Successfully ,answer : {answer} ")
+        else:
+            logger.error(f"Answer Send Failed, answer : {answer} \nerror text : {r.text}")
+    except Exception as e:
+        logger.error(f"客服消息接口发送失败 ,status_code : {r.status_code} , \nException : {str(e)}")
     return 
+
+def answer_to_wechat(answer:str, access_token, openid, logger):
+    """
+    预处理回答answer
+    逐条发送answer
+    """    
+    answers = process_answer_for_wechat(answer)
+    for answer in answers:
+        reply_to_wechat(answer=answer,access_token=access_token, openid=openid, logger=logger)
+    return
+
 
 def openai_to_wechat(question, access_token, openid, openai_api_key,logger):
     """
