@@ -25,7 +25,7 @@ APP_PORT = 9900
 # 公众号： ChenHub 相关开发info
 WEIXIN_APP_ID = "wx34a7f35cb5424180"
 WEIXIN_APP_SECRET = os.getenv("WEIXIN_APP_SECRET")
-WEIXIN_TOKEN = "7c0cd95f55c61fe37e8ed9e27171c2ec"
+WEIXIN_TOKEN = "663f23b8d77926c92349afbcb3439e85"
 
 # openai api key
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
