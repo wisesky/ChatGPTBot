@@ -12,6 +12,7 @@
 import os
 import openai
 import requests
+import json
 
 #TODO 如何保存上下文聊天
 def get_answer_from_openai(question, openai_api_key,logger):
@@ -68,7 +69,7 @@ def answer_to_wechat(answer, access_token, openid, logger):
 
     """
     url = f"https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={access_token}"
-    json = {
+    data = {
         "touser":openid,
         "msgtype":"text",
         "text":
@@ -77,7 +78,9 @@ def answer_to_wechat(answer, access_token, openid, logger):
         }
     }
     # 微信发送消息，客服消息接口，必须是json，不能是data
-    r = requests.post(url, json=json)
+    # 同时为了包装json内部的英文编码，需要用非ascii，用unicode编码
+    json_data = json.dumps(data, ascii=False)
+    r = requests.post(url, data=json_data)
     logger.info(f"send answer : {answer} \n Get response from wechat server  : {r.text}")
     return 
 
