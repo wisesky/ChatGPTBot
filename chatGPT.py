@@ -49,7 +49,7 @@ def get_answer_from_openai(question, openai_api_key,logger):
     """
     return response['choices'][0]['message']['content']
 
-def answer_to_wechat(answer, access_token, openid, logger):
+def answer_to_wechat(answer:str, access_token, openid, logger):
     """
         假如服务器无法保证在五秒内处理并回复，必须做出下述回复，这样微信服务器才不会对此作任何处理，并且不会发起重试
         （这种情况下，可以使用客服消息接口进行异步回复）
@@ -68,13 +68,17 @@ def answer_to_wechat(answer, access_token, openid, logger):
     }
 
     """
+    # 预处理answer ，去掉开头的回车符\n
+    post_answer = answer
+    while post_answer.startswith('\n') :
+        post_answer = post_answer[1: ]
     url = f"https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={access_token}"
     data = {
         "touser":openid,
         "msgtype":"text",
         "text":
         {
-            "content":answer
+            "content":post_answer
         }
     }
     # 微信发送消息，客服消息接口，必须是json，不能是data
