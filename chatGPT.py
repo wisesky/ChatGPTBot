@@ -79,8 +79,8 @@ def answer_to_wechat(answer, access_token, openid, logger):
     }
     # 微信发送消息，客服消息接口，必须是json，不能是data
     # 同时为了包装json内部的英文编码，需要用非ascii，用unicode编码
-    json_data = json.dumps(data, ascii=False)
-    r = requests.post(url, data=json_data)
+    json_data = json.dumps(data, ensure_ascii=False)
+    r = requests.post(url, data=json_data.encode('utf8'))
     logger.info(f"send answer : {answer} \n Get response from wechat server  : {r.text}")
     return 
 
