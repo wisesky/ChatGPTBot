@@ -58,7 +58,7 @@ def process_answer_for_wechat(answer):
     while post_answer.startswith('\n') :
         post_answer = post_answer[1: ]
     # 切分符合微信字数要求的消息 : 600字
-    answers = [answer[pos:pos+600] for pos in range(0,len(answer), 600)]
+    answers = [post_answer[pos:pos+600] for pos in range(0,len(post_answer), 600)]
     return answers
 
 def reply_to_wechat(answer:str, access_token, openid, logger):
@@ -97,7 +97,7 @@ def reply_to_wechat(answer:str, access_token, openid, logger):
     r = requests.post(url, data=json_data.encode('utf8'))
     try:
         r_json = r.json()
-        if r_json['errcode'] == 0 and r_json['errmsg'] is 'ok':
+        if r_json['errcode'] == 0 and r_json['errmsg'] == 'ok':
             # {"errcode":0,"errmsg":"ok"}
             logger.info(f"Answer Send Successfully ,answer : {answer} ")
         else:
