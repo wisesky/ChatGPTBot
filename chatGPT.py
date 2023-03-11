@@ -76,7 +76,8 @@ def answer_to_wechat(answer, access_token, openid, logger):
             "content":answer
         }
     }
-    r = requests.post(url, data=data)
+    # 微信发送消息，客服消息接口，必须是json，不能是data
+    r = requests.post(url, json=data)
     logger.info(f"send answer : {answer} \n Get response from wechat server  : {r.text}")
     return 
 
